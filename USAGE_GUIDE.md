@@ -94,7 +94,7 @@ This validates:
 
 ### Change Internal Link
 
-Edit `blog_generator.py` line ~257:
+Search for `class="internal-link"` in `blog_generator.py` or modify the line in the `generate_full_html()` method:
 
 ```python
 <a href="https://www.solartopps.com/YOUR-PAGE/" class="internal-link">
@@ -102,7 +102,7 @@ Edit `blog_generator.py` line ~257:
 
 ### Change External Link
 
-Edit `blog_generator.py` line ~332:
+Search for `class="external-link"` in `blog_generator.py` or modify the line in the `generate_full_html()` method:
 
 ```python
 <a href="https://YOUR-AUTHORITATIVE-SOURCE.com" class="external-link">
@@ -148,8 +148,8 @@ Edit the `generate_chart_html()` method in `blog_generator.py` to modify the tab
 After generating your blog post:
 
 - [ ] Replace `[KEYWORD]` with actual keyword (if using placeholder method)
-- [ ] Review and adjust meta title (aim for 50-60 characters)
-- [ ] Review and adjust meta description (aim for 150-160 characters)
+- [ ] Review and adjust meta title (optimal 50-60 characters, acceptable 30-70)
+- [ ] Review and adjust meta description (optimal 150-160 characters, acceptable 120-160)
 - [ ] Update the featured image path
 - [ ] Verify internal link points to correct page
 - [ ] Verify external link is authoritative

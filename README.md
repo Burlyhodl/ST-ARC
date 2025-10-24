@@ -8,8 +8,8 @@ A professional-grade HTML blog post generator specifically designed for SolarTop
 ## ✨ Features
 
 ### SEO Optimization
-- ✅ **Meta Title** (50-60 characters, optimized for search)
-- ✅ **Meta Description** (150-160 characters)
+- ✅ **Meta Title** (optimal 50-60 characters, acceptable 30-70)
+- ✅ **Meta Description** (optimal 150-160 characters, acceptable 120-160)
 - ✅ **URL-Friendly Slug** (automatically generated from keyword)
 - ✅ **Schema.org BlogPosting JSON-LD** (structured data for search engines)
 - ✅ **Open Graph Tags** (Facebook/social media optimization)

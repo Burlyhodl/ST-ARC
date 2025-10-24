@@ -14,7 +14,7 @@ This generator ensures all content meets Yoast SEO's green score requirements fo
 ### ✅ Keyphrase in Meta Description
 - **Requirement**: Target keyword must appear in meta description
 - **Implementation**: Meta description is auto-generated with keyword
-- **Length**: 155-160 characters (optimal for SERP display)
+- **Length**: Optimized for 155-160 characters (truncated if longer)
 - **Example**: "Discover Tesla Powerwall installation cost Arizona insights..."
 
 ### ✅ Keyphrase in Introduction
@@ -66,7 +66,7 @@ This generator ensures all content meets Yoast SEO's green score requirements fo
 
 ### ✅ Sentence Length
 - **Requirement**: Average sentence length under 20 words
-- **Implementation**: Sentences typically 15-25 words
+- **Implementation**: Sentences typically 12-20 words (average ~16 words)
 - **Benefit**: Easier comprehension for diverse audiences
 
 ### ✅ Transition Words

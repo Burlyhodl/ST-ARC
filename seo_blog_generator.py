@@ -68,9 +68,17 @@ class SEOBlogGenerator:
     
     def generate_meta_description(self, keyword: str, content_snippet: str) -> str:
         """Generate SEO-optimized meta description (155-160 characters)"""
+        # Base description with keyword
         description = f"Discover {keyword} insights and expert analysis. {content_snippet}"
+        
+        # Ensure minimum length
+        if len(description) < 155:
+            description += " Learn from industry experts at SolarTopps."
+        
+        # Truncate if too long
         if len(description) > 160:
             description = description[:157] + "..."
+        
         return description
     
     def generate_title(self, keyword: str) -> str:

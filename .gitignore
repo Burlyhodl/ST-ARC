@@ -25,6 +25,15 @@ venv/
 ENV/
 env/
 .venv
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Generated blog posts
+blog_*.html
+example_blog_*.html
+complete_example_*.html
 
 # IDE
 .vscode/
@@ -46,3 +55,6 @@ Thumbs.db
 # example_*.html
 # blog_post_*.html
 # blog_post_*.json
+# Temp files
+/tmp/
+*.tmp

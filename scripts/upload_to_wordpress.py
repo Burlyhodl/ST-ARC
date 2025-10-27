@@ -1,27 +1,82 @@
 #!/usr/bin/env python3
-"""Upload SolarTopps blog posts to WordPress via the REST API."""
+"""Upload SolarTopps blog posts to WordPress via the REST API.
+
+This script reads the generated HTML article, extracts publishing metadata,
+then uploads the post using the WordPress application password flow.
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
 import os
+import re
 import sys
-from pathlib import Path
-from typing import List, Optional
+from dataclasses import dataclass
+from typing import Dict, List, Optional
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+import requests
 
-from st_arc.env import load_env
-from st_arc.wordpress import (
-    MetadataExtractionError,
-    build_payload,
-    extract_metadata,
-    load_html,
-    upload_post,
+
+META_TITLE_PATTERN = re.compile(r"<title>(?P<title>.*?)</title>", re.IGNORECASE | re.DOTALL)
+META_DESCRIPTION_PATTERN = re.compile(
+    r'<meta\s+name="description"\s+content="(?P<description>.*?)"\s*/?>',
+    re.IGNORECASE | re.DOTALL,
 )
+SLUG_PATTERN = re.compile(
+    r"<strong>\s*Slug:\s*</strong>\s*(?P<slug>[^<]+)", re.IGNORECASE | re.DOTALL
+)
+
+
+@dataclass
+class ArticleMetadata:
+    title: str
+    description: str
+    slug: str
+
+
+class MetadataExtractionError(RuntimeError):
+    """Raised when required metadata cannot be pulled from the HTML."""
+
+
+def extract_metadata(html: str) -> ArticleMetadata:
+    """Extract the meta title, description, and slug from the HTML article."""
+
+    title_match = META_TITLE_PATTERN.search(html)
+    description_match = META_DESCRIPTION_PATTERN.search(html)
+    slug_match = SLUG_PATTERN.search(html)
+
+    if not title_match:
+        raise MetadataExtractionError("Could not find <title> tag in the HTML file.")
+    if not description_match:
+        raise MetadataExtractionError(
+            "Could not find meta description. Ensure a <meta name=\"description\"> tag exists."
+        )
+
+    if slug_match:
+        slug = slug_match.group("slug").strip()
+    else:
+        slug = slugify(title_match.group("title"))
+
+    return ArticleMetadata(
+        title=clean_html_whitespace(title_match.group("title")),
+        description=clean_html_whitespace(description_match.group("description")),
+        slug=slug,
+    )
+
+
+def clean_html_whitespace(value: str) -> str:
+    """Collapse whitespace characters that often appear inside HTML tags."""
+
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def slugify(value: str) -> str:
+    """Generate a WordPress-friendly slug from a string."""
+
+    lowered = value.lower()
+    sanitized = re.sub(r"[^a-z0-9]+", "-", lowered)
+    return sanitized.strip("-")
 
 
 def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
@@ -29,10 +84,6 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser.add_argument(
         "file",
         help="Path to the generated HTML article that should be uploaded.",
-    )
-    parser.add_argument(
-        "--env-file",
-        help="Path to a .env file to load before running. Defaults to project .env if present.",
     )
     parser.add_argument(
         "--username",
@@ -91,6 +142,49 @@ def resolve_password(args: argparse.Namespace) -> str:
         "WordPress application password not provided. Pass --password or set "
         "WP_APPLICATION_PASSWORD."
     )
+
+
+def build_payload(metadata: ArticleMetadata, content: str, args: argparse.Namespace) -> Dict:
+    payload: Dict[str, object] = {
+        "title": metadata.title,
+        "slug": metadata.slug,
+        "status": args.status,
+        "content": content,
+        "excerpt": metadata.description,
+    }
+
+    if args.categories:
+        payload["categories"] = args.categories
+    if args.tags:
+        payload["tags"] = args.tags
+
+    return payload
+
+
+def upload_post(
+    *,
+    base_url: str,
+    username: str,
+    password: str,
+    payload: Dict[str, object],
+) -> Dict:
+    endpoint = base_url.rstrip("/") + "/wp-json/wp/v2/posts"
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(
+        endpoint,
+        headers=headers,
+        data=json.dumps(payload),
+        auth=(username, password),
+        timeout=30,
+    )
+    if response.status_code >= 400:
+        raise RuntimeError(
+            f"Upload failed with status {response.status_code}: {response.text}"
+        )
+    return response.json()
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     args = parse_args(argv)
 
@@ -103,6 +197,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         html = load_html(args.file)
     except RuntimeError as exc:
         raise SystemExit(str(exc)) from exc
+        with open(args.file, "r", encoding="utf-8") as file:
+            html = file.read()
+    except OSError as exc:
+        raise SystemExit(f"Failed to read article file: {exc}") from exc
 
     try:
         metadata = extract_metadata(html)
@@ -116,6 +214,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         categories=args.categories,
         tags=args.tags,
     )
+    payload = build_payload(metadata, html, args)
 
     if args.dry_run:
         print(json.dumps(payload, indent=2, ensure_ascii=False))

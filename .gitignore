@@ -1,3 +1,60 @@
+# Python
 __pycache__/
-*.pyc
-.env
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Generated blog posts
+blog_*.html
+example_blog_*.html
+complete_example_*.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Example outputs (optional - uncomment if you don't want to track these)
+# example_*.html
+# blog_post_*.html
+# blog_post_*.json
+# Temp files
+/tmp/
+*.tmp

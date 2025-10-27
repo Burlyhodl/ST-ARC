@@ -10,7 +10,7 @@ ST-Article Creator and AI article generator
 
 2. **Export your WordPress application password** (or supply it via `--password`).
    ```bash
-   export WP_APPLICATION_PASSWORD="abcd efgh ijkl mnop qrst uvwx"
+   export WP_APPLICATION_PASSWORD="m4AR YqSY LW2b IhUW lPjx 1led"
    ```
 
 3. **Run the uploader script** from the project root. Provide your WordPress username and the HTML file generated in `content/`.

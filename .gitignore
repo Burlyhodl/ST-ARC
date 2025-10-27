@@ -20,6 +20,11 @@ wheels/
 .installed.cfg
 *.egg
 
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv
 # Virtual Environment
 venv/
 env/
@@ -41,6 +46,15 @@ complete_example_*.html
 .DS_Store
 Thumbs.db
 
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Example outputs (optional - uncomment if you don't want to track these)
+# example_*.html
+# blog_post_*.html
+# blog_post_*.json
 # Temp files
 /tmp/
 *.tmp

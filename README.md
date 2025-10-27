@@ -285,3 +285,26 @@ For more GPTs by God of Prompt, visit https://godofprompt.ai/gpts
 ---
 
 **Note**: This tool generates content based on reference materials and templates. Always review and edit generated content for accuracy, brand voice, and specific requirements before publishing.
+# ST-ARC
+ST-Article Creator and AI article generator
+
+## Uploading Articles to WordPress
+
+1. **Install dependencies**
+   ```bash
+   pip install requests
+   ```
+
+2. **Export your WordPress application password** (or supply it via `--password`).
+   ```bash
+   export WP_APPLICATION_PASSWORD="abcd efgh ijkl mnop qrst uvwx"
+   ```
+
+3. **Run the uploader script** from the project root. Provide your WordPress username and the HTML file generated in `content/`.
+   ```bash
+   python scripts/upload_to_wordpress.py content/solar-roi-playbook.html \
+       --username your-wordpress-username \
+       --status draft
+   ```
+
+   Use `--dry-run` to inspect the payload without sending it, or `--status publish` when ready to go live. Category and tag IDs can be added with `--categories` and `--tags` respectively.

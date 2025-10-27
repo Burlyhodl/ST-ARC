@@ -189,6 +189,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = parse_args(argv)
 
     try:
+        load_env(args.env_file, overwrite=bool(args.env_file))
+    except FileNotFoundError as exc:
+        raise SystemExit(str(exc)) from exc
+
+    try:
+        html = load_html(args.file)
+    except RuntimeError as exc:
+        raise SystemExit(str(exc)) from exc
         with open(args.file, "r", encoding="utf-8") as file:
             html = file.read()
     except OSError as exc:
@@ -199,6 +207,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     except MetadataExtractionError as exc:
         raise SystemExit(str(exc)) from exc
 
+    payload = build_payload(
+        metadata,
+        html,
+        status=args.status,
+        categories=args.categories,
+        tags=args.tags,
+    )
     payload = build_payload(metadata, html, args)
 
     if args.dry_run:

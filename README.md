@@ -547,21 +547,128 @@ ST-Article Creator and AI article generator
 
 ## Uploading Articles to WordPress
 
+### Prerequisites
+
 1. **Install dependencies**
    ```bash
-   pip install requests
+   pip install -r requirements.txt
    ```
 
-2. **Export your WordPress application password** (or supply it via `--password`).
+2. **Get a WordPress Application Password**
+   - Log in to your WordPress site
+   - Go to Users → Profile
+   - Scroll to "Application Passwords"
+   - Create a new application password for ST-ARC
+   - Copy the generated password (format: `xxxx xxxx xxxx xxxx xxxx xxxx`)
+
+### Method 1: Standalone Upload Script
+
+Use this method to upload an existing HTML file to WordPress.
+
+1. **Set your WordPress application password** as an environment variable:
    ```bash
    export WP_APPLICATION_PASSWORD="abcd efgh ijkl mnop qrst uvwx"
    ```
 
-3. **Run the uploader script** from the project root. Provide your WordPress username and the HTML file generated in `content/`.
+2. **Run the upload script** with your WordPress username and HTML file:
    ```bash
    python scripts/upload_to_wordpress.py content/solar-roi-playbook.html \
        --username your-wordpress-username \
        --status draft
    ```
 
-   Use `--dry-run` to inspect the payload without sending it, or `--status publish` when ready to go live. Category and tag IDs can be added with `--categories` and `--tags` respectively.
+3. **Available options:**
+   - `--username USERNAME` (required): WordPress username
+   - `--password PASSWORD` (optional): Application password (falls back to WP_APPLICATION_PASSWORD)
+   - `--base-url URL` (optional): WordPress site URL (default: https://www.solartopps.com)
+   - `--status {draft,publish,future}` (optional): Post status (default: draft)
+   - `--categories ID [ID ...]` (optional): Category IDs to assign
+   - `--tags ID [ID ...]` (optional): Tag IDs to assign
+   - `--dry-run` (optional): Preview payload without uploading
+
+4. **Test with dry-run first:**
+   ```bash
+   python scripts/upload_to_wordpress.py content/solar-roi-playbook.html \
+       --username your-wordpress-username \
+       --dry-run
+   ```
+
+### Method 2: Integrated Workflow Script
+
+Use this method for end-to-end article generation and publishing.
+
+1. **Publish an existing article:**
+   ```bash
+   python scripts/article_workflow.py publish \
+       --file content/solar-roi-playbook.html \
+       --username your-wordpress-username \
+       --status draft
+   ```
+
+2. **Generate and publish in one command** (requires OpenAI API key):
+   ```bash
+   export OPENAI_API_KEY="your-openai-key"
+   export WP_APPLICATION_PASSWORD="your-wp-password"
+   
+   python scripts/article_workflow.py generate \
+       "Solar Panel Efficiency Tips" \
+       --reference-url https://example.com/solar-article \
+       --username your-wordpress-username \
+       --status draft
+   ```
+
+### Metadata Extraction
+
+The upload scripts automatically extract metadata from your HTML:
+- **Title**: From `<title>` tag
+- **Meta Description**: From `<meta name="description">` tag
+- **Slug**: From `<strong>Slug:</strong>` in the HTML, or auto-generated from title
+
+Example HTML structure:
+```html
+<head>
+  <title>Solar Panel Installation Guide 2025</title>
+  <meta name="description" content="Complete guide to solar panel installation." />
+</head>
+<body>
+  <section id="meta_data">
+    <p><strong>Slug:</strong> solar-panel-installation-guide</p>
+  </section>
+</body>
+```
+
+### Advanced Usage
+
+**Upload with categories and tags:**
+```bash
+python scripts/upload_to_wordpress.py content/article.html \
+    --username admin \
+    --categories 5 12 \
+    --tags 8 15 22 \
+    --status publish
+```
+
+**Change base URL for a different WordPress site:**
+```bash
+python scripts/upload_to_wordpress.py content/article.html \
+    --username admin \
+    --base-url https://yourblog.com \
+    --password "your app password"
+```
+
+### Troubleshooting
+
+**Authentication Error (401):**
+- Verify your WordPress username is correct
+- Regenerate your application password
+- Check that WP_APPLICATION_PASSWORD environment variable is set
+
+**Missing Metadata Error:**
+- Ensure your HTML has a `<title>` tag
+- Add a `<meta name="description">` tag
+- The slug will be auto-generated if not present
+
+**Connection Timeout:**
+- Check your internet connection
+- Verify the WordPress site URL is correct
+- Try increasing the timeout (modify the script if needed)

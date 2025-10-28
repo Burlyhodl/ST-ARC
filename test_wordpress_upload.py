@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """Unit tests for WordPress upload functionality."""
 
-import json
 import unittest
-from unittest.mock import MagicMock, patch, mock_open
-from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from st_arc.wordpress import (
     ArticleMetadata,

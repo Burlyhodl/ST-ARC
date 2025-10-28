@@ -39,16 +39,26 @@ class MetadataExtractionError(RuntimeError):
     """Raised when required metadata cannot be pulled from the HTML."""
 
 
+def debug_print(message: str, args: argparse.Namespace) -> None:
+    """Print debug messages if not in dry-run mode."""
+    if not args.dry_run:
+        print(f"DEBUG: {message}", file=sys.stderr)
+
+
 def extract_metadata(html: str) -> ArticleMetadata:
     """Extract the meta title, description, and slug from the HTML article."""
+
+    print(f"DEBUG: HTML length: {len(html)} characters", file=sys.stderr)
 
     title_match = META_TITLE_PATTERN.search(html)
     description_match = META_DESCRIPTION_PATTERN.search(html)
     slug_match = SLUG_PATTERN.search(html)
 
     if not title_match:
+        print("DEBUG: Available HTML preview:", html[:500], file=sys.stderr)
         raise MetadataExtractionError("Could not find <title> tag in the HTML file.")
     if not description_match:
+        print("DEBUG: Available HTML preview:", html[:500], file=sys.stderr)
         raise MetadataExtractionError(
             "Could not find meta description. Ensure a <meta name=\"description\"> tag exists."
         )
@@ -171,6 +181,10 @@ def upload_post(
     endpoint = base_url.rstrip("/") + "/wp-json/wp/v2/posts"
     headers = {"Content-Type": "application/json"}
 
+    print(f"DEBUG: Uploading to {endpoint}", file=sys.stderr)
+    print(f"DEBUG: Username: {username}", file=sys.stderr)
+    print(f"DEBUG: Payload keys: {list(payload.keys())}", file=sys.stderr)
+
     response = requests.post(
         endpoint,
         headers=headers,
@@ -178,7 +192,12 @@ def upload_post(
         auth=(username, password),
         timeout=30,
     )
+
+    print(f"DEBUG: Response status: {response.status_code}", file=sys.stderr)
+    print(f"DEBUG: Response headers: {dict(response.headers)}", file=sys.stderr)
+
     if response.status_code >= 400:
+        print(f"DEBUG: Response body: {response.text}", file=sys.stderr)
         raise RuntimeError(
             f"Upload failed with status {response.status_code}: {response.text}"
         )
@@ -188,15 +207,11 @@ def upload_post(
 def main(argv: Optional[List[str]] = None) -> int:
     args = parse_args(argv)
 
-    try:
-        load_env(args.env_file, overwrite=bool(args.env_file))
-    except FileNotFoundError as exc:
-        raise SystemExit(str(exc)) from exc
+    print(f"DEBUG: Processing file: {args.file}", file=sys.stderr)
+    print(f"DEBUG: Base URL: {args.base_url}", file=sys.stderr)
+    print(f"DEBUG: Status: {args.status}", file=sys.stderr)
 
     try:
-        html = load_html(args.file)
-    except RuntimeError as exc:
-        raise SystemExit(str(exc)) from exc
         with open(args.file, "r", encoding="utf-8") as file:
             html = file.read()
     except OSError as exc:
@@ -207,13 +222,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     except MetadataExtractionError as exc:
         raise SystemExit(str(exc)) from exc
 
-    payload = build_payload(
-        metadata,
-        html,
-        status=args.status,
-        categories=args.categories,
-        tags=args.tags,
-    )
     payload = build_payload(metadata, html, args)
 
     if args.dry_run:

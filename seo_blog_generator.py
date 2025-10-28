@@ -10,8 +10,19 @@ import sys
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
-import requests
-from bs4 import BeautifulSoup
+
+# Check for required dependencies
+try:
+    import requests
+    from bs4 import BeautifulSoup
+except ImportError as e:
+    print("Error: Required dependencies are missing.")
+    print("Please install the required packages by running:")
+    print("pip install requests beautifulsoup4")
+    print(f"Missing package: {str(e).split()[-1] if 'No module named' in str(e) else e}")
+    print("\nAlternatively, install from requirements:")
+    print("pip install -r requirements.txt")
+    sys.exit(1)
 
 
 class SEOBlogGenerator:
@@ -371,7 +382,7 @@ solar professionals in your area.
         return '\n\n'.join(paragraphs)
     
     def generate_complete_html(self, input_content: str, keyword: str, 
-                              secondary_keywords: List[str] = None,
+                              secondary_keywords: Optional[List[str]] = None,
                               custom_slug: str = None,
                               data_points: Dict = None) -> str:
         """Generate the complete SEO-optimized HTML blog post"""
@@ -493,7 +504,7 @@ solar professionals in your area.
         return complete_html
     
     def generate_wordpress_html(self, input_content: str, keyword: str, 
-                               secondary_keywords: List[str] = None,
+                               secondary_keywords: Optional[List[str]] = None,
                                custom_slug: str = None,
                                data_points: Dict = None) -> Dict[str, str]:
         """Generate WordPress-ready HTML components"""

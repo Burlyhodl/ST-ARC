@@ -19,7 +19,7 @@ class ProductionConfig(Config):
     TESTING = False
     # Override secret key for production
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    if not SECRET_KEY or SECRET_KEY == 'dev-secret-key-change-in-production':
+    if SECRET_KEY is None or SECRET_KEY == 'dev-secret-key-change-in-production':
         raise ValueError("SECRET_KEY must be set in production environment")
     
 class TestingConfig(Config):

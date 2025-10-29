@@ -17,7 +17,15 @@ CORS(app)
 
 # Configuration
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+
+# Security: Require SECRET_KEY in production
+if os.environ.get('FLASK_ENV') == 'production':
+    secret_key = os.environ.get('SECRET_KEY')
+    if not secret_key or secret_key == 'dev-secret-key-change-in-production':
+        raise ValueError("SECRET_KEY must be set in production environment")
+    app.config['SECRET_KEY'] = secret_key
+else:
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # Initialize generator
 generator = SEOBlogGenerator()
@@ -104,7 +112,8 @@ def generate_blog():
         
     except Exception as e:
         print(f"Error generating blog post: {e}")
-        return jsonify({'error': f'Failed to generate blog post: {str(e)}'}), 500
+        # Don't expose internal error details to user
+        return jsonify({'error': 'Failed to generate blog post. Please check your input and try again.'}), 500
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
@@ -124,7 +133,8 @@ def upload_file():
         
     except Exception as e:
         print(f"Error uploading file: {e}")
-        return jsonify({'error': f'Failed to upload file: {str(e)}'}), 500
+        # Don't expose internal error details to user
+        return jsonify({'error': 'Failed to upload file. Please check the file format and try again.'}), 500
 
 @app.route('/api/download', methods=['POST'])
 def download_html():
@@ -136,6 +146,12 @@ def download_html():
         
         if not html_content:
             return jsonify({'error': 'No content to download'}), 400
+        
+        # Sanitize filename to prevent path traversal
+        import os
+        filename = os.path.basename(filename)
+        if not filename.endswith('.html'):
+            filename = 'blog_post.html'
         
         # Create a BytesIO object
         buffer = BytesIO()
@@ -151,7 +167,8 @@ def download_html():
         
     except Exception as e:
         print(f"Error downloading file: {e}")
-        return jsonify({'error': f'Failed to download file: {str(e)}'}), 500
+        # Don't expose internal error details to user
+        return jsonify({'error': 'Failed to download file. Please try again.'}), 500
 
 @app.route('/health')
 def health():
@@ -178,5 +195,8 @@ def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
-    # Development server
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Development server - DO NOT USE IN PRODUCTION
+    # For production, use gunicorn: gunicorn --bind 0.0.0.0:5000 app:app
+    import os
+    is_production = os.environ.get('FLASK_ENV') == 'production'
+    app.run(debug=not is_production, host='0.0.0.0', port=5000)

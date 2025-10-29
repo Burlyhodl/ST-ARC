@@ -254,11 +254,11 @@ function setupResultActions() {
         if (isHidden) {
             htmlPreview.classList.remove('hidden');
             toggleIcon.textContent = '▲';
-            toggleBtn.innerHTML = `<span id="toggleIcon">▲</span> Hide Full HTML Preview`;
+            toggleBtn.childNodes[1].textContent = ' Hide Full HTML Preview';
         } else {
             htmlPreview.classList.add('hidden');
             toggleIcon.textContent = '▼';
-            toggleBtn.innerHTML = `<span id="toggleIcon">▼</span> Show Full HTML Preview`;
+            toggleBtn.childNodes[1].textContent = ' Show Full HTML Preview';
         }
     });
     

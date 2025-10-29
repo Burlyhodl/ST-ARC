@@ -58,3 +58,17 @@ Thumbs.db
 # Temp files
 /tmp/
 *.tmp
+
+# Environment and secrets
+.env
+.env.local
+.env.production
+*.secret
+
+# Logs
+logs/
+*.log
+
+# Flask
+instance/
+.webassets-cache

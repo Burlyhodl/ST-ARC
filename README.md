@@ -2,8 +2,31 @@
 
 ST-Article Creator and AI article generator that creates fully optimized, expert-level blog content for SolarTopps.com that meets Yoast SEO, Google Search Console, and SEMrush standards.
 
+## 🌐 **NEW: Production-Ready Web Interface!**
+
+ST-ARC now features a modern, user-friendly web interface - no coding required!
+
+### Quick Start (Web UI)
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the web server
+python app.py
+
+# Open browser to http://localhost:5000
+```
+
+![ST-ARC Web Interface](https://github.com/user-attachments/assets/e08c4fc7-8410-4019-8226-6f377f83bdcb)
+
+**[📖 Web Frontend Guide](WEB_FRONTEND_GUIDE.md)** | **[🚀 Deployment Guide](DEPLOYMENT.md)**
+
+---
+
 ## Features
 
+✅ **Modern Web Interface** - User-friendly UI for the public (NEW!)  
 ✅ **1500+ word minimum content** - Professional, comprehensive articles  
 ✅ **Yoast SEO compliant** - Green scores for both SEO and Readability  
 ✅ **Raw HTML output** - Ready for WordPress block editor  
@@ -13,6 +36,7 @@ ST-Article Creator and AI article generator that creates fully optimized, expert
 ✅ **Data visualization** - HTML/CSS/JS charts with solar industry data  
 ✅ **Multiple input methods** - URL, text, or file input supported  
 ✅ **Keyword optimization** - Primary and secondary keyword integration  
+✅ **Docker deployment** - Production-ready containerization (NEW!)  
 ✅ **Font: Montserrat** - Professional, readable typography  
 
 ## Installation
@@ -30,9 +54,21 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Interactive Mode
+### Web Interface (Recommended for Public Use)
 
-Run the generator in interactive mode:
+Start the web server:
+
+```bash
+python app.py
+```
+
+Then open your browser to `http://localhost:5000` and use the intuitive web interface!
+
+For production deployment, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+### CLI Mode (Advanced Users)
+
+Run the generator in interactive CLI mode:
 
 ```bash
 python seo_blog_generator.py

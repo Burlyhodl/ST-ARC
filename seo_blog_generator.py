@@ -296,6 +296,7 @@ As we've explored throughout this guide, {keyword} represents more than just a t
 # CLI section (runs only when executed directly)
 #
 def _run_cli():
+    pass
 #    import sys
 #    gen = SEOBlogGenerator()
 #    print("=" * 80)

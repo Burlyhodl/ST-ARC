@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ST-ARC - SEO Blog Post Generator</title>
+    <meta name="description" content="Generate professional, SEO-optimized blog posts for SolarTopps.com">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">
+                    <span class="logo-icon">⚡</span>
+                    ST-ARC
+                </h1>
+                <p class="tagline">Professional SEO Blog Post Generator for SolarTopps</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Features Banner -->
+            <div class="features-banner">
+                <div class="feature">
+                    <span class="feature-icon">✓</span>
+                    <span>1500+ Words</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✓</span>
+                    <span>Yoast SEO Ready</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✓</span>
+                    <span>WordPress Compatible</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✓</span>
+                    <span>Schema Markup</span>
+                </div>
+            </div>
+
+            <!-- Generator Form -->
+            <div class="card">
+                <h2 class="section-title">Generate Your Blog Post</h2>
+                
+                <form id="generatorForm">
+                    <!-- Input Method Selection -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <span class="label-icon">📎</span>
+                            Content Source
+                        </label>
+                        <div class="input-method-tabs">
+                            <button type="button" class="tab-button active" data-method="text">
+                                <span class="tab-icon">📝</span>
+                                Text Input
+                            </button>
+                            <button type="button" class="tab-button" data-method="url">
+                                <span class="tab-icon">🔗</span>
+                                URL
+                            </button>
+                            <button type="button" class="tab-button" data-method="file">
+                                <span class="tab-icon">📄</span>
+                                File Upload
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Text Input -->
+                    <div class="input-panel active" data-panel="text">
+                        <div class="form-group">
+                            <label for="contentText" class="form-label">Reference Content</label>
+                            <textarea 
+                                id="contentText" 
+                                class="form-input textarea" 
+                                rows="6"
+                                placeholder="Paste your reference content here... (articles, research, or source material)"
+                            ></textarea>
+                            <small class="form-hint">Provide reference material to base the blog post on</small>
+                        </div>
+                    </div>
+
+                    <!-- URL Input -->
+                    <div class="input-panel" data-panel="url">
+                        <div class="form-group">
+                            <label for="contentUrl" class="form-label">Source URL</label>
+                            <input 
+                                type="url" 
+                                id="contentUrl" 
+                                class="form-input" 
+                                placeholder="https://example.com/article"
+                            >
+                            <small class="form-hint">Enter a URL to fetch content from</small>
+                        </div>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div class="input-panel" data-panel="file">
+                        <div class="form-group">
+                            <label for="contentFile" class="form-label">Upload File</label>
+                            <div class="file-upload-area">
+                                <input 
+                                    type="file" 
+                                    id="contentFile" 
+                                    class="file-input" 
+                                    accept=".txt,.html,.md"
+                                >
+                                <label for="contentFile" class="file-upload-label">
+                                    <span class="upload-icon">📁</span>
+                                    <span class="upload-text">Choose a file or drag here</span>
+                                    <span class="upload-hint">Supported: .txt, .html, .md (max 16MB)</span>
+                                </label>
+                            </div>
+                            <div id="fileInfo" class="file-info hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- Keyword Input -->
+                    <div class="form-group">
+                        <label for="keyword" class="form-label required">
+                            <span class="label-icon">🔑</span>
+                            Target Keyword
+                        </label>
+                        <input 
+                            type="text" 
+                            id="keyword" 
+                            class="form-input" 
+                            placeholder="e.g., Tesla Powerwall installation cost Arizona"
+                            required
+                        >
+                        <small class="form-hint">Main SEO keyword/phrase for the blog post</small>
+                    </div>
+
+                    <!-- Secondary Keywords (Optional) -->
+                    <div class="form-group">
+                        <label for="secondaryKeywords" class="form-label">
+                            <span class="label-icon">🧠</span>
+                            Secondary Keywords (Optional)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="secondaryKeywords" 
+                            class="form-input" 
+                            placeholder="powerwall cost, battery storage Arizona, solar battery (comma-separated)"
+                        >
+                        <small class="form-hint">Related keywords to naturally incorporate</small>
+                    </div>
+
+                    <!-- Custom Slug (Optional) -->
+                    <div class="form-group">
+                        <label for="slug" class="form-label">
+                            <span class="label-icon">📌</span>
+                            URL Slug (Optional)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="slug" 
+                            class="form-input" 
+                            placeholder="tesla-powerwall-arizona-cost"
+                        >
+                        <small class="form-hint">Custom URL slug (auto-generated if left blank)</small>
+                    </div>
+
+                    <!-- Data Visualization (Optional) -->
+                    <div class="form-group">
+                        <label for="dataPoints" class="form-label">
+                            <span class="label-icon">📈</span>
+                            Chart Data (Optional)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="dataPoints" 
+                            class="form-input" 
+                            placeholder="2020:15,2021:23,2022:35,2023:48,2024:62"
+                        >
+                        <small class="form-hint">Format: label1:value1,label2:value2,... (for data visualization)</small>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="generateBtn">
+                            <span class="btn-icon">✨</span>
+                            Generate Blog Post
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-overlay hidden" id="loadingOverlay">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Generating your SEO-optimized blog post...</p>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section hidden" id="resultsSection">
+                <div class="card">
+                    <h2 class="section-title">
+                        <span class="title-icon">🎉</span>
+                        Your Blog Post is Ready!
+                    </h2>
+
+                    <!-- Metadata Display -->
+                    <div class="metadata-grid">
+                        <div class="metadata-item">
+                            <label>Title</label>
+                            <div id="resultTitle" class="metadata-value"></div>
+                        </div>
+                        <div class="metadata-item">
+                            <label>Slug</label>
+                            <div id="resultSlug" class="metadata-value"></div>
+                        </div>
+                        <div class="metadata-item">
+                            <label>Meta Description</label>
+                            <div id="resultMetaDesc" class="metadata-value"></div>
+                        </div>
+                        <div class="metadata-item">
+                            <label>Word Count</label>
+                            <div id="resultWordCount" class="metadata-value"></div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" id="previewBtn">
+                            <span class="btn-icon">👁️</span>
+                            Preview HTML
+                        </button>
+                        <button class="btn btn-secondary" id="copyBtn">
+                            <span class="btn-icon">📋</span>
+                            Copy to Clipboard
+                        </button>
+                        <button class="btn btn-success" id="downloadBtn">
+                            <span class="btn-icon">⬇️</span>
+                            Download HTML
+                        </button>
+                    </div>
+
+                    <!-- Preview Modal Toggle -->
+                    <div class="preview-toggle">
+                        <button class="btn btn-link" id="togglePreviewBtn">
+                            <span id="toggleIcon">▼</span>
+                            Show Full HTML Preview
+                        </button>
+                    </div>
+
+                    <!-- HTML Preview (collapsible) -->
+                    <div class="html-preview hidden" id="htmlPreview">
+                        <div class="preview-header">
+                            <h3>HTML Content</h3>
+                        </div>
+                        <pre id="htmlContent" class="code-block"></pre>
+                    </div>
+                </div>
+
+                <!-- Start Over Button -->
+                <div class="reset-section">
+                    <button class="btn btn-outline" id="resetBtn">
+                        <span class="btn-icon">🔄</span>
+                        Generate Another Post
+                    </button>
+                </div>
+            </div>
+
+            <!-- Toast Notification -->
+            <div class="toast hidden" id="toast">
+                <span class="toast-icon" id="toastIcon"></span>
+                <span class="toast-message" id="toastMessage"></span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>ST-ARC - Professional Blog Post Generator for SolarTopps.com</p>
+            <p class="footer-links">
+                <a href="https://github.com/Burlyhodl/ST-ARC" target="_blank">GitHub</a>
+                <span>•</span>
+                <a href="https://godofprompt.ai/gpts" target="_blank">God of Prompt</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

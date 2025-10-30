@@ -296,60 +296,60 @@ As we've explored throughout this guide, {keyword} represents more than just a t
 # CLI section (runs only when executed directly)
 #
 def _run_cli():
-    import sys
-    gen = SEOBlogGenerator()
-    print("=" * 80)
-    print("Automated SEO Blog Post Generator for SolarTopps")
-    print("=" * 80)
-    print()
-    print("1) Enter URL  2) Paste text  3) Load from file")
-    choice = input("Select input method (1-3): ").strip()
-    input_content = ""
-    if choice == "1":
-        url = input("URL: ").strip()
-        input_content = gen.fetch_url_content(url) or ""
-    elif choice == "2":
-        print("Paste content, then press Ctrl-D / Ctrl-Z:")
-        input_content = sys.stdin.read()
-    elif choice == "3":
-        path = input("File path: ").strip()
-        input_content = gen.load_file_content(path) or ""
-    else:
-        input_content = ""
+#    import sys
+#    gen = SEOBlogGenerator()
+#    print("=" * 80)
+#    print("Automated SEO Blog Post Generator for SolarTopps")
+#    print("=" * 80)
+#    print()
+#    print("1) Enter URL  2) Paste text  3) Load from file")
+#    choice = input("Select input method (1-3): ").strip()
+#    input_content = ""
+#    if choice == "1":
+#        url = input("URL: ").strip()
+#        input_content = gen.fetch_url_content(url) or ""
+#    elif choice == "2":
+#        print("Paste content, then press Ctrl-D / Ctrl-Z:")
+#        input_content = sys.stdin.read()
+#    elif choice == "3":
+#        path = input("File path: ").strip()
+#        input_content = gen.load_file_content(path) or ""
+#    else:
+#        input_content = ""
 
-    keyword = input("Enter keyword/phrase: ").strip()
-    if not keyword:
-        print("Keyword required; exiting.")
-        return
+#    keyword = input("Enter keyword/phrase: ").strip()
+#    if not keyword:
+#        print("Keyword required; exiting.")
+#        return
 
-    secondary = input("Secondary keywords (comma-separated, optional): ").strip()
-    secondary_keywords = [k.strip() for k in secondary.split(",")] if secondary else []
-    slug = input("Preferred slug (optional): ").strip() or None
-    use_data = input("Provide custom data for visualization? (y/n): ").strip().lower() == "y"
-    data_points = None
-    if use_data:
-        raw = input("Enter label:value pairs (label1:val1,label2:val2,...): ").strip()
-        try:
-            labels, values = [], []
-            for p in raw.split(","):
-                l, v = p.split(":")
-                labels.append(l.strip())
-                values.append(float(v.strip()))
-            data_points = {"labels": labels, "values": values, "title": f"{keyword} - Metrics"}
-        except Exception:
-            data_points = None
+#    secondary = input("Secondary keywords (comma-separated, optional): ").strip()
+#    secondary_keywords = [k.strip() for k in secondary.split(",")] if secondary else []
+#    slug = input("Preferred slug (optional): ").strip() or None
+#    use_data = input("Provide custom data for visualization? (y/n): ").strip().lower() == "y"
+#    data_points = None
+#    if use_data:
+#        raw = input("Enter label:value pairs (label1:val1,label2:val2,...): ").strip()
+#        try:
+#            labels, values = [], []
+#            for p in raw.split(","):
+#                l, v = p.split(":")
+#                labels.append(l.strip())
+#                values.append(float(v.strip()))
+#            data_points = {"labels": labels, "values": values, "title": f"{keyword} - Metrics"}
+#        except Exception:
+#            data_points = None
 
-    result = gen.generate_wordpress_html(input_content, keyword, secondary_keywords, slug, data_points)
-    # Print summary
-    print("\n[RESULT]")
-    print("Title:", result.get("meta_title"))
-    print("Slug:", result.get("slug"))
-    print("Meta Desc:", result.get("meta_description"))
-    print("Word count (approx):", result.get("word_count"))
-    out_file = f"blog_{result.get('slug', 'output')}.html"
-    with open(out_file, "w", encoding="utf-8") as f:
-        f.write(result.get("content", result.get("html", "")))
-    print("Saved to", out_file)
+#    result = gen.generate_wordpress_html(input_content, keyword, secondary_keywords, slug, data_points)
+#    # Print summary
+#    print("\n[RESULT]")
+#    print("Title:", result.get("meta_title"))
+#    print("Slug:", result.get("slug"))
+#    print("Meta Desc:", result.get("meta_description"))
+#    print("Word count (approx):", result.get("word_count"))
+#    out_file = f"blog_{result.get('slug', 'output')}.html"
+#    with open(out_file, "w", encoding="utf-8") as f:
+#        f.write(result.get("content", result.get("html", "")))
+#    print("Saved to", out_file)
 
 if __name__ == "__main__":
     _run_cli()

@@ -1,8 +1,179 @@
+"""
+Adapter to let app.py use the existing BlogPostGenerator implementation.
+Provides SEOBlogGenerator with fetch_url_content and generate_wordpress_html methods used by the Flask app.
+"""
+
+import requests
+from bs4 import BeautifulSoup
+from typing import Optional, List, Dict
+from blog_generator import BlogPostGenerator
+
+class SEOBlogGenerator:
+    """Adapter so app.py can use BlogPostGenerator from this repo.
+
+    Methods:
+    - fetch_url_content(url) -> str: fetches article/main/body text from a URL
+    - generate_wordpress_html(...) -> Dict: returns a dict with at least keys: html, slug, meta_title, meta_description
+    """
+
+    def __init__(self, user_agent: str = "st-arc-bot/1.0"):
+        self.headers = {"User-Agent": user_agent}
+
+    def fetch_url_content(self, url: str) -> str:
+        """Fetch page and return main text.
+
+        Tries to extract <article> or <main>; falls back to <body> or full text.
+        Returns empty string on any failure so caller can handle errors.
+        """
+        try:
+            resp = requests.get(url, headers=self.headers, timeout=10)
+            resp.raise_for_status()
+            soup = BeautifulSoup(resp.text, "lxml")
+
+            # Prefer semantic containers
+            article = soup.find("article")
+            if article and article.get_text(strip=True):
+                return article.get_text(separator="\n", strip=True)
+
+            main = soup.find("main")
+            if main and main.get_text(strip=True):
+                return main.get_text(separator="\n", strip=True)
+
+            # Try common content containers
+            selectors = [".post-content", ".article-body", ".content", ".entry-content"]
+            for sel in selectors:
+                node = soup.select_one(sel)
+                if node and node.get_text(strip=True):
+                    return node.get_text(separator="\n", strip=True)
+
+            if soup.body and soup.body.get_text(strip=True):
+                return soup.body.get_text(separator="\n", strip=True)
+
+            # Fallback: full page text
+            return soup.get_text(separator="\n", strip=True)
+
+        except Exception:
+            return ""
+
+    def generate_wordpress_html(
+        self,
+        input_content: str,
+        keyword: str,
+        secondary_keywords: Optional[List[str]] = None,
+        custom_slug: Optional[str] = None,
+        data_points: Optional[Dict] = None
+    ) -> Dict:
+        """Generate a result dict compatible with app.py.
+
+        Uses BlogPostGenerator to build the main HTML. If input_content is provided,
+        it will be injected into the generated HTML as a Source/Reference section.
+
+        Returns a dict containing at minimum:
+        - html: full HTML string
+        - slug: slug string
+        - meta_title: meta title string
+        - meta_description: meta description string
+        """
+        gen_keyword = keyword if keyword else "[KEYWORD]"
+        generator = BlogPostGenerator(gen_keyword)
+
+        # Generate the base HTML
+        html = generator.generate_full_html()
+
+        # If input_content provided, insert it after the header intro (best-effort)
+        if input_content:
+            snippet = self._escape_html_snippet(input_content)
+            source_section = (
+                "\n        <section>\n"
+                "            <h2>Source / Reference Content</h2>\n"
+                "            <div class=\"source-content\" style=\"white-space:pre-wrap; background:#f4f4f4; padding:12px; border-radius:6px;\">\n"
+                f"{snippet}\n"
+                "            </div>\n"
+                "        </section>\n"
+            )
+
+            # Look for a reasonable insertion point
+            insert_marker = "</div>\n        </header>"
+            if insert_marker in html:
+                html = html.replace(insert_marker, source_section + insert_marker, 1)
+            else:
+                # fallback: after opening <body>
+                if "<body>" in html:
+                    html = html.replace("<body>", "<body>\n" + source_section, 1)
+
+        result = {
+            "html": html,
+            "slug": custom_slug or generator.slug,
+            "meta_title": generator.generate_meta_title(),
+            "meta_description": generator.generate_meta_description(),
+        }
+
+        # Optionally include provided data_points in result for UI use
+        if data_points:
+            result["data_points"] = data_points
+
+        return result
+
+    def _escape_html_snippet(self, text: str) -> str:
+        """Minimal escaping to safely embed plain text inside an HTML block."""
+        return (
+            text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+        )
+
 #!/usr/bin/env python3
 """
 Automated SEO Blog Post Generator for SolarTopps
 Generates Yoast SEO and Google Search Console optimized HTML blog posts
 """
+import requests
+from bs4 import BeautifulSoup
+from blog_generator import BlogPostGenerator
+from typing import Optional, List, Dict
+
+class SEOBlogGenerator:
+    def __init__(self):
+        # no-op or default config
+        pass
+
+    def fetch_url_content(self, url: str) -> str:
+        try:
+            resp = requests.get(url, timeout=10)
+            resp.raise_for_status()
+            soup = BeautifulSoup(resp.text, "lxml")
+            # simple extraction: join text from <article> if present else body text
+            article = soup.find("article")
+            if article:
+                return article.get_text(separator="\n", strip=True)
+            body = soup.body
+            if body:
+                return body.get_text(separator="\n", strip=True)
+            return soup.get_text(separator="\n", strip=True)
+        except Exception:
+            return ""
+
+    def generate_wordpress_html(
+        self,
+        input_content: str,
+        keyword: str,
+        secondary_keywords: Optional[List[str]] = None,
+        custom_slug: Optional[str] = None,
+        data_points: Optional[Dict] = None
+    ) -> Dict:
+        # create generator using keyword (or placeholder)
+        gen_keyword = keyword if keyword else "[KEYWORD]"
+        gen = BlogPostGenerator(gen_keyword)
+
+        # Optionally customize gen with provided data_points (not implemented here)
+        html = gen.generate_full_html()  # returns the full HTML
+        result = {
+            "html": html,
+            "slug": custom_slug or gen.slug,
+            "meta_title": gen.generate_meta_title(),
+            "meta_description": gen.generate_meta_description()
+        }
+        return result
 
 import json
 import re

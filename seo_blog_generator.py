@@ -40,7 +40,7 @@ class SEOBlogGenerator:
         try:
             resp = requests.get(url, headers=self.headers, timeout=15)
             resp.raise_for_status()
-            soup = BeautifulSoup(resp.text, "lxml")
+            soup = BeautifulSoup(resp.text, "html.parser")
 
             # Prefer semantic containers
             article = soup.find("article")

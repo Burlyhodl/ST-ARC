@@ -58,7 +58,7 @@ class SEOBlogGenerator:
             
             return text
         except Exception as e:
-            print(f"Error fetching URL: {e}")
+            print(f"Error fetching URL '{url}': {e}")
             return ""
     
     def load_file_content(self, filepath: str) -> str:
@@ -67,7 +67,7 @@ class SEOBlogGenerator:
             with open(filepath, 'r', encoding='utf-8') as f:
                 return f.read()
         except Exception as e:
-            print(f"Error reading file: {e}")
+            print(f"Error reading file '{filepath}': {e}")
             return ""
     
     def generate_slug(self, title: str) -> str:
@@ -161,7 +161,10 @@ class SEOBlogGenerator:
     const labels = {json.dumps(data_points['labels'])};
     const values = {json.dumps(data_points['values'])};
     
-    const width = canvas.width = canvas.offsetWidth;
+    let width = canvas.offsetWidth;
+    if (!width || width === 0) {{
+        width = 600; /* Set a default minimum width */
+    }}
     const height = canvas.height = 300;
     const padding = 40;
     const barWidth = (width - padding * 2) / labels.length * 0.8;
@@ -555,6 +558,10 @@ solar professionals in your area.
                 'purpose': 'External authority link for credibility'
             })
         
+        # Strip HTML tags for accurate word count
+        text_only = re.sub(r'<[^>]+>', '', wordpress_content)
+        word_count = len(text_only.split())
+
         return {
             'title': title,
             'slug': slug,
@@ -562,7 +569,7 @@ solar professionals in your area.
             'schema': schema,
             'content': wordpress_content,
             'links': links,
-            'word_count': len(wordpress_content.split())
+            'word_count': word_count
         }
 
 
